@@ -51,19 +51,19 @@ cp -p  "${INPUT_ROOT}/dump/genesis_manifests.json"        "${bundle_root}/"
 cp -p  "${INPUT_ROOT}/dump/nvd/"*.json                    "${bundle_root}/${NVD_DEFINITIONS_DIR}"
 cp -p  "${INPUT_ROOT}/dump/k8s/"*.yaml                    "${bundle_root}/${K8S_DEFINITIONS_DIR}"
 cp -p  "${INPUT_ROOT}/dump/rhelv2/repository-to-cpe.json" "${bundle_root}/${REPO_TO_CPE_DIR}"
-cp -pr "${INPUT_ROOT}/rhel/THIRD_PARTY_NOTICES"           "${bundle_root}/"
+#cp -pr "${INPUT_ROOT}/rhel/THIRD_PARTY_NOTICES"           "${bundle_root}/"
 
 # =============================================================================
 
 # Files should have owner/group equal to root:root
-if tar --version | grep -q "gnu" ; then
+#if tar --version | grep -q "gnu" ; then
   tar_chown_args=("--owner=root:0" "--group=root:0")
-else
-  tar_chown_args=("--uid=root:0" "--gid=root:0")
-fi
+#else
+#  tar_chown_args=("--uid=root:0" "--gid=root:0")
+#fi
 
 # Create output bundle of all files in $bundle_root
-tar cz "${tar_chown_args[@]}" --file "$OUTPUT_BUNDLE" --directory "${bundle_root}" .
+gtar cz "${tar_chown_args[@]}" --file "$OUTPUT_BUNDLE" --directory "${bundle_root}" .
 
 # Create checksum
 sha512sum "${OUTPUT_BUNDLE}" > "${OUTPUT_BUNDLE}.sha512"

@@ -27,10 +27,20 @@ DEFAULT_IMAGE_REGISTRY := quay.io/stackrox-io
 BUILD_IMAGE_VERSION=$(shell sed 's/\s*\#.*//' BUILD_IMAGE_VERSION)
 BUILD_IMAGE := $(DEFAULT_IMAGE_REGISTRY)/apollo-ci:$(BUILD_IMAGE_VERSION)
 
+UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
+ARCH="amd64"
+ifeq ($(UNAME_S),Darwin)
+ifeq ($(UNAME_M),arm64)
+	# TODO build this as a part of the CI image flow
+	BUILD_IMAGE = quay.io/rhacs-eng/sandbox:apollo-ci-scanner-build-0.3.44-arm64
+	ARCH = arm64
+endif
+endif
 LOCAL_VOLUME_ARGS := -v$(CURDIR):/src:delegated -v $(GOPATH):/go:delegated
 GOPATH_WD_OVERRIDES := -w /src -e GOPATH=/go
-IMAGE_BUILD_FLAGS := -e CGO_ENABLED=1,GOOS=linux,GOARCH=amd64
-BUILD_FLAGS := CGO_ENABLED=1 GOOS=linux GOARCH=amd64
+IMAGE_BUILD_FLAGS := -e CGO_ENABLED=1,GOOS=linux,GOARCH=$(ARCH)
+BUILD_FLAGS := CGO_ENABLED=1 GOOS=linux GOARCH=$(ARCH)
 BUILD_CMD := go build -trimpath -ldflags="-linkmode=external -X github.com/stackrox/scanner/pkg/version.Version=$(TAG)" -o image/scanner/bin/scanner ./cmd/clair
 
 #####################################################################
@@ -192,7 +202,7 @@ $(CURDIR)/image/db/rhel/bundle.tar.gz:
 	$(CURDIR)/image/db/rhel/create-bundle.sh $(CURDIR)/image/db $(CURDIR)/image/db/rhel
 
 .PHONY: scanner-image
-scanner-image: scanner-build-dockerized ossls-notice $(CURDIR)/image/scanner/rhel/bundle.tar.gz
+scanner-image: scanner-build-dockerized $(CURDIR)/image/scanner/rhel/bundle.tar.gz
 	@echo "+ $@"
 	@docker build -t scanner:$(TAG) -f image/scanner/rhel/Dockerfile image/scanner/rhel
 
