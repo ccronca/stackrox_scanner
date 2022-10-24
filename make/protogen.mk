@@ -71,6 +71,7 @@ $(PROTOC):
 
 
 PROTOC_INCLUDES := $(PROTOC_DIR)/include/google
+PROTO_GOOGLE_INCLUDES := $(CURDIR)/proto-ext
 
 PROTOC_GEN_GO_BIN := $(PROTO_GOBIN)/protoc-gen-gofast
 
@@ -115,7 +116,6 @@ GATEWAY_M_ARGS_STR := $(subst $(space),$(comma),$(strip $(GATEWAY_M_ARGS)))
 $(PROTOC_INCLUDES): $(PROTOC)
 
 GOGO_DIR = $(shell go list -f '{{.Dir}}' -m github.com/gogo/protobuf)
-GRPC_GATEWAY_DIR = $(shell go list -f '{{.Dir}}' -m github.com/grpc-ecosystem/grpc-gateway)
 
 .PHONY: proto-fmt
 proto-fmt: $(PROTOC_GEN_LINT)
@@ -123,7 +123,7 @@ proto-fmt: $(PROTOC_GEN_LINT)
 	$(SILENT)PATH=$(PROTO_GOBIN) $(PROTOC) \
 		-I$(PROTOC_INCLUDES) \
 		-I$(GOGO_DIR)/protobuf \
-		-I$(GRPC_GATEWAY_DIR)/third_party/googleapis \
+		-I$(PROTO_GOOGLE_INCLUDES) \
 		--lint_out=. \
 		--proto_path=$(PROTO_BASE_PATH) \
 		$(ALL_PROTOS)
@@ -168,15 +168,15 @@ printprotos:
 
 PROTOC_GEN_GRPC_GATEWAY := $(PROTO_GOBIN)/protoc-gen-grpc-gateway
 
-$(PROTOC_GEN_GRPC_GATEWAY): $(MODFILE_DIR)/github.com/grpc-ecosystem/grpc-gateway/UPDATE_CHECK $(PROTO_GOBIN)
+$(PROTOC_GEN_GRPC_GATEWAY): $(MODFILE_DIR)/github.com/grpc-ecosystem/grpc-gateway/v2/UPDATE_CHECK $(PROTO_GOBIN)
 	@echo "+ $@"
-	$(SILENT)GOBIN=$(PROTO_GOBIN) go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+	$(SILENT)GOBIN=$(PROTO_GOBIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 
-PROTOC_GEN_SWAGGER := $(PROTO_GOBIN)/protoc-gen-swagger
+PROTOC_GEN_SWAGGER := $(PROTO_GOBIN)/protoc-gen-openapiv2
 
-$(PROTOC_GEN_SWAGGER): $(MODFILE_DIR)/github.com/grpc-ecosystem/grpc-gateway/UPDATE_CHECK $(PROTO_GOBIN)
+$(PROTOC_GEN_SWAGGER): $(MODFILE_DIR)/github.com/grpc-ecosystem/grpc-gateway/v2/UPDATE_CHECK $(PROTO_GOBIN)
 	@echo "+ $@"
-	$(SILENT)GOBIN=$(PROTO_GOBIN) go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+	$(SILENT)GOBIN=$(PROTO_GOBIN) go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 
 $(GENERATED_DOC_PATH):
 	@echo "+ $@"
@@ -191,7 +191,7 @@ $(GENERATED_BASE_PATH)/%.pb.go: $(PROTO_BASE_PATH)/%.proto $(PROTO_DEPS) $(PROTO
 	$(SILENT)PATH=$(PROTO_GOBIN) $(PROTOC) \
 		-I$(GOGO_DIR) \
 		-I$(PROTOC_INCLUDES) \
-		-I$(GRPC_GATEWAY_DIR)/third_party/googleapis \
+		-I$(PROTO_GOOGLE_INCLUDES) \
 		--proto_path=$(PROTO_BASE_PATH) \
 		--gofast_out=$(GOGO_M_STR:%=%,)$(M_ARGS_STR:%=%,)plugins=grpc:$(GENERATED_BASE_PATH) \
 		$(dir $<)/*.proto
@@ -199,15 +199,16 @@ $(GENERATED_BASE_PATH)/%.pb.go: $(PROTO_BASE_PATH)/%.proto $(PROTO_DEPS) $(PROTO
 # Generate all of the reverse-proxies (gRPC-Gateways) with one invocation of
 # protoc when any of the .pb.gw.go sources don't exist or when any of the
 # .proto files change.
-$(GENERATED_BASE_PATH)/%_service.pb.gw.go: $(PROTO_BASE_PATH)/%_service.proto $(GENERATED_BASE_PATH)/%_service.pb.go $(ALL_PROTOS)
+$(GENERATED_BASE_PATH)/%.pb.gw.go: $(PROTO_BASE_PATH)/%.proto $(PROTOC_GEN_GRPC_GATEWAY) $(ALL_PROTOS)
 	@echo "+ $@"
 	$(SILENT)mkdir -p $(dir $@)
 	$(SILENT)PATH=$(PROTO_GOBIN) $(PROTOC) \
 		-I$(PROTOC_INCLUDES) \
 		-I$(GOGO_DIR) \
-		-I$(GRPC_GATEWAY_DIR)/third_party/googleapis \
+		-I$(PROTO_GOOGLE_INCLUDES) \
 		--proto_path=$(PROTO_BASE_PATH) \
-		--grpc-gateway_out=$(GATEWAY_M_ARGS_STR:%=%,)allow_colon_final_segments=true,logtostderr=true:$(GENERATED_BASE_PATH) \
+		--grpc-gateway_out=$(GENERATED_BASE_PATH) \
+		--grpc-gateway_opt=$(M_ARGS_STR:%=%,)logtostderr=true,paths=source_relative \
 		$(dir $<)/*.proto
 
 # Generate all of the swagger specifications with one invocation of protoc
@@ -218,9 +219,10 @@ $(GENERATED_BASE_PATH)/%.swagger.json: $(PROTO_BASE_PATH)/%.proto $(PROTO_DEPS) 
 	$(SILENT)PATH=$(PROTO_GOBIN) $(PROTOC) \
 		-I$(GOGO_DIR) \
 		-I$(PROTOC_INCLUDES) \
-		-I$(GRPC_GATEWAY_DIR)/third_party/googleapis \
+		-I$(PROTO_GOOGLE_INCLUDES) \
 		--proto_path=$(PROTO_BASE_PATH) \
-		--swagger_out=logtostderr=true,json_names_for_fields=true:$(GENERATED_BASE_PATH) \
+		--openapiv2_out=$(GENERATED_BASE_PATH) \
+		--openapiv2_opt=$(M_ARGS_STR:%=%,)logtostderr=true,json_names_for_fields=true \
 		$(dir $<)/*.proto
 
 # Generate the docs from the merged swagger specs.
