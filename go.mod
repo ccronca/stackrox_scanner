@@ -34,6 +34,7 @@ require (
 	github.com/opencontainers/image-spec v1.1.0-rc2
 	github.com/pborman/uuid v1.2.1
 	github.com/pkg/errors v0.9.1
+	github.com/planetscale/vtprotobuf v0.3.0
 	github.com/prometheus/client_golang v1.13.0
 	github.com/quay/goval-parser v0.8.8
 	github.com/remind101/migrate v0.0.0-20170729031349-52c1edff7319
@@ -48,6 +49,7 @@ require (
 	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8
 	google.golang.org/api v0.100.0
 	google.golang.org/grpc v1.50.1
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -176,7 +178,7 @@ require (
 	golang.stackrox.io/grpc-http1 v0.2.5 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20221014213838-99cd37c6964a // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
+	google.golang.org/protobuf v1.28.1
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
