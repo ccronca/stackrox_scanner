@@ -15,8 +15,6 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-git/go-billy/v5 v5.3.1
 	github.com/go-git/go-git/v5 v5.4.2
-	github.com/gogo/protobuf v1.3.2
-	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.9
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
@@ -54,7 +52,11 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
-require github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
+require (
+	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
+)
 
 require (
 	bitbucket.org/creachadair/shell v0.0.7 // indirect

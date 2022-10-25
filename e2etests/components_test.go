@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/golang/protobuf/jsonpb"
 	v1 "github.com/stackrox/scanner/generated/scanner/api/v1"
+	"github.com/stackrox/scanner/pkg/transitional/protocompat/jsonpb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

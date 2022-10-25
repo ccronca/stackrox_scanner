@@ -3,11 +3,11 @@ package vulndefs
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	apiGRPC "github.com/stackrox/scanner/api/grpc"
 	"github.com/stackrox/scanner/database"
 	v1 "github.com/stackrox/scanner/generated/scanner/api/v1"
+	"github.com/stackrox/scanner/pkg/transitional/protocompat/types"
 	"github.com/stackrox/scanner/pkg/updater"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

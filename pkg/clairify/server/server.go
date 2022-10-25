@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	protoTypes "github.com/gogo/protobuf/types"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -26,6 +25,7 @@ import (
 	"github.com/stackrox/scanner/pkg/commonerr"
 	"github.com/stackrox/scanner/pkg/mtls"
 	server "github.com/stackrox/scanner/pkg/scan"
+	protoTypes "github.com/stackrox/scanner/pkg/transitional/protocompat/types"
 	"github.com/stackrox/scanner/pkg/updater"
 	"github.com/stackrox/scanner/pkg/version"
 )
