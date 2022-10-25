@@ -204,6 +204,9 @@ replace (
 	github.com/gogo/protobuf => github.com/connorgorman/protobuf v1.2.2-0.20210115205927-b892c1b298f7
 	github.com/heroku/docker-registry-client => github.com/stackrox/docker-registry-client v0.0.0-20220204234128-07f109db0819
 
+	// mailru fork needed due to usage of values instead of pointers; see https://github.com/mailru/easyjson/pull/376
+	github.com/mailru/easyjson => github.com/misberner/easyjson v0.0.0-20220806042407-84cd25193300
+
 	github.com/operator-framework/helm-operator-plugins => github.com/stackrox/helm-operator v0.0.10-0.20220919093109-89f9785764c6
 	github.com/stackrox/rox => github.com/stackrox/stackrox v0.0.0-20221004225457-0e5037e513f1
 

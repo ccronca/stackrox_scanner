@@ -55,7 +55,7 @@ $(STATICCHECK_BIN): deps
 	@echo "+ $@"
 	@cd tools/linters/ && go install honnef.co/go/tools/cmd/staticcheck
 
-EASYJSON_BIN := $(GOPATH)/bin/easyjson
+EASYJSON_BIN := $(GOBIN)/easyjson
 $(EASYJSON_BIN): deps
 	@echo "+ $@"
 	go install github.com/mailru/easyjson/easyjson
@@ -350,8 +350,8 @@ proto-generated-srcs: $(PROTO_GENERATED_SRCS)
 .PHONY: go-easyjson-srcs
 go-easyjson-srcs: $(EASYJSON_BIN)
 	@echo "+ $@"
-	@easyjson -pkg pkg/vulnloader/nvdloader
-	@easyjson -pkg api/v1
+	$(SILENT)$(EASYJSON_BIN) -pkg -ptr_receivers pkg/vulnloader/nvdloader
+	$(SILENT)$(EASYJSON_BIN) -pkg -ptr_receivers api/v1
 
 clean-proto-generated-srcs:
 	@echo "+ $@"
